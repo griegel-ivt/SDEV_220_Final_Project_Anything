@@ -1,0 +1,88 @@
+// DATA MODELS //
+MODEL Municipality:
+    ID, Name, County, Population, ContactEmail
+
+MODEL Question:
+    ID, Category, Text, Weight, Options[]
+
+MODEL AssessmentSubmission:
+    ID, MunicipalityID, Timestamp, Answers[QuestionID, Value]
+
+MODEL ScoredReport:
+    ID, SubmissionID, TotalScore, CategoryScores{}, Gaps[], ActionPlan[]
+
+// SCORE REPORTING //
+
+FUNCTION calculate_scores(user_answers, question_data):
+    INITIALIZE category_totals = {}
+    INITIALIZE identified_gaps = []
+
+    FOR answer IN user_answers:
+        weight = question_data[answer.id].weight
+        score = answer.value
+        category = question_data[answer.id].category
+
+        // Weight calculation
+        category_totals{category} += (score * weight)
+
+        // Gap Detection
+        IF score <= 2:
+            identified_gaps.append(question_data[answer.id].gap_description)
+
+    RETURN category_totals, identified_gaps
+
+FUNCTION generate_action_plan(gaps):
+    // Get recommendations based on gap IDs
+    action_plan = DB.query("SELECT rec FROM recommendations WHERE gap_id IN gaps")
+    RETURN action_plan
+
+// API //
+
+GET municipality_id, answers_list FROM db
+    
+    // Save submission
+    submission = DB.table('assessments').insert({municipality_id, answers_list})
+
+    // Calculate score
+    category_scores, gaps = calculate_scores(answers_list, DB.questions)
+    action_plan = generate_action_plan(gaps)
+
+    report = DB.table('reports').insert({
+        submission_id: submission.id,
+        scores: category_scores,
+        recommendations: action_plan,
+    })
+
+    RETURN report.id
+
+// MAIN PROGRAM //
+
+BEGIN
+    DISPLAY title
+    
+    // Municipality
+    municipality = select_municipality()
+
+    // Assessment Loop
+    questions = CALL GET /questions
+    FOR question IN questions:
+        DISPLAY question.text
+        IF question.type == "checklist":
+            INPUT selection
+        ELSE:
+            INPUT scale_1_to_4
+        
+        UPDATE progress_bar
+    
+    // Submission & Results
+    report_id = CALL POST /submit(answers)
+    report = CALL GET /report/{report_id}
+    
+    DISPLAY report.total_score
+    DISPLAY report.action_plan
+
+    // Maintenance (TO DO STILL)
+    WHILE user_wants_to_update:
+        RERUN Scoring
+        ???
+END
