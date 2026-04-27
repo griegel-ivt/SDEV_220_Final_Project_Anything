@@ -1,0 +1,74 @@
+def print_header():
+    print("============================================================")
+    print("   Indiana Municipality Cybersecurity Self-Assessment Tool  ")
+    print("============================================================")
+
+def print_main_menu():
+    print("\n-------- MAIN MENU --------")
+    print("1. Start New Assessment")
+    print("2. View Previous Reports")
+    print("3. Update Existing Assessment")
+    print("4. Manage Municipality Profile")
+    print("5. Exit")
+    print("---------------------------")
+
+def print_assessment_menu():
+    print("\n-------- ASSESSMENT MENU --------")
+    print("1. Identity & Access Management")
+    print("2. Incident Response Capabilities")
+    print("3. Patch Management")
+    print("4. Third-Party Vendor Risk")
+    print("5. Data Storage & Transit Protection")
+    print("6. Compliance Standards")
+    print("7. Security Testing")
+    print("8. Back to Main Menu")
+    print("---------------------------------")
+
+def print_report_menu():
+    print("\n-------- REPORTS MENU --------")
+    print("1. View Latest Report")
+    print("2. View All Reports")
+    print("3. Export Report")
+    print("4. Back to Main Menu")
+    print("------------------------------")
+
+def print_municipality_menu():
+    print("\n-------- MUNICIPALITY MENU --------")
+    print("1. Add New Municipality")
+    print("2. View Municipality Info")
+    print("3. Update Municipality Info")
+    print("4. Back to Main Menu")
+    print("-----------------------------------")
+
+def main():
+    print_header()
+    
+    while True:
+        print_main_menu()
+        choice = input("Enter your choice (1-5): ").strip()
+  
+        if choice == "1":
+            print("\n[INFO] Starting new assessment...")
+            print_assessment_menu()
+          
+        elif choice == "2":
+            print("\n[INFO] Loading reports...")
+            print_report_menu()
+
+        elif choice == "3":
+            print("\n[INFO] Loading existing assessments for update...")
+
+        elif choice == "4":
+            print("\n[INFO] Opening municipality management...")
+            print_municipality_menu()
+            
+        elif choice == "5":
+            print("\n[INFO] Thank you for using the Cybersecurity Self-Assessment Tool.")
+            print("Stay secure!\n")
+            break
+        
+        else:
+            print("\n[ERROR] Invalid choice. Please enter a number between 1 and 5.")
+
+if __name__ == "__main__":
+    main()
